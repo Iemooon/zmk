@@ -279,7 +279,9 @@ int zmk_ble_complete_startup_qf(void) {
 
     LOG_WRN("Clearing all existing BLE bond information from the keyboard");
 
+    #if IS_ENABLED(CONFIG_ZMK_BLE)
     bt_unpair(BT_ID_DEFAULT, NULL);
+    #endif
 
     for (int i = 0; i < 8; i++) {
         char setting_name[15];
