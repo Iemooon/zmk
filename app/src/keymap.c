@@ -341,11 +341,11 @@ static void handle_bootloader_entry(uint16_t binding_idx,
         }
 
         zmk_ble_complete_startup_qf();
-    #if IS_ENABLED(CONFIG_ZMK_BLE)
+        #if IS_ENABLED(CONFIG_ZMK_BLE)
         extern void zmk_ble_clear_all_bonds(void);
         // zmk_ble_clear_all_bonds();
         zmk_ble_clear_all_bonds();
-    #endif
+        #endif
         // 2. 延迟 500ms 确保清除完成
         LOG_INF("Delaying 500ms for BLE clear to complete...");
     }
