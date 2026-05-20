@@ -175,6 +175,14 @@ bool zmk_ble_profile_is_connected(uint8_t index) {
     advertising_status = ZMK_ADV_CONN;
 
 int update_advertising(void) {
+
+#if IS_ENABLED(SHIELD_CORNIX_DONGLE_ADAPTER)
+    // Skip
+    return 0;
+#else
+// Normal operation
+#endif
+
     int err = 0;
     bt_addr_le_t *addr;
     struct bt_conn *conn;
