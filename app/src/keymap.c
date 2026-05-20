@@ -279,9 +279,9 @@ int zmk_ble_complete_startup_qf(void) {
 
     LOG_WRN("Clearing all existing BLE bond information from the keyboard");
 
-    #if IS_ENABLED(CONFIG_ZMK_BLE)
+    //#if IS_ENABLED(CONFIG_ZMK_BLE)
     bt_unpair(BT_ID_DEFAULT, NULL);
-    #endif
+    //#endif
 
     for (int i = 0; i < 8; i++) {
         char setting_name[15];
@@ -333,7 +333,7 @@ static void handle_bootloader_entry(uint16_t binding_idx,
         LOG_INF(" reset kb behavior='%s' \n", binding->behavior_dev);
 
         // 1. 先断开所有连接（模拟 BT_DISC_CMD 对所有 profile）
-        #if IS_ENABLED(CONFIG_ZMK_BLE)
+        //#if IS_ENABLED(CONFIG_ZMK_BLE)
         for (int i = 0; i < 2; i++) {
             extern bool zmk_ble_profile_is_connected(uint8_t index);
             extern int zmk_ble_prof_disconnect(uint8_t index);
@@ -342,14 +342,14 @@ static void handle_bootloader_entry(uint16_t binding_idx,
                 zmk_ble_prof_disconnect(i);
             }
         }
-        #endif
+        //#endif
 
         zmk_ble_complete_startup_qf();
-        #if IS_ENABLED(CONFIG_ZMK_BLE)
+        //#if IS_ENABLED(CONFIG_ZMK_BLE)
         extern void zmk_ble_clear_all_bonds(void);
         // zmk_ble_clear_all_bonds();
         zmk_ble_clear_all_bonds();
-        #endif
+        //#endif
         // 2. 延迟 500ms 确保清除完成
         LOG_INF("Delaying 500ms for BLE clear to complete...");
     }
