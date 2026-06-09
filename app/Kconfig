@@ -197,8 +197,10 @@ config ZMK_BLE_PASSKEY_ENTRY
 # Modifying Start: Disable BLE HID host advertising for USB dongle receivers.
 config ZMK_BLE_DISABLE_HOST_ADV
     bool "Disable BLE HID host advertising"
+    depends on ZMK_USB
     help
-      Disable BLE HID advertising to host devices while keeping BLE enabled.
+      Disable BLE HID advertising and BLE HID output while keeping BLE enabled
+      for split communication. HID reports are always sent over USB.
       This is useful for USB dongle receivers that still need BLE split central
       communication with peripherals.
 # End of Modifying

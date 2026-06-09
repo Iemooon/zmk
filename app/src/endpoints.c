@@ -415,6 +415,10 @@ static bool is_usb_ready(void) {
 
 static bool is_ble_ready(void) {
 #if IS_ENABLED(CONFIG_ZMK_BLE)
+    if (IS_ENABLED(CONFIG_ZMK_BLE_DISABLE_HOST_ADV)) {
+        return false;
+    }
+
     return zmk_ble_active_profile_is_connected();
 #else
     return false;
@@ -422,6 +426,11 @@ static bool is_ble_ready(void) {
 }
 
 static enum zmk_transport get_selected_transport(void) {
+    // Dongle mode keeps BLE for split links only; host HID must remain on USB.
+    if (IS_ENABLED(CONFIG_ZMK_BLE_DISABLE_HOST_ADV)) {
+        return ZMK_TRANSPORT_USB;
+    }
+
     switch (preferred_transport) {
     case ZMK_TRANSPORT_NONE:
         LOG_DBG("No endpoint transport selected");
