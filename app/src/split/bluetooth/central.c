@@ -944,7 +944,17 @@ static void split_central_connected(struct bt_conn *conn, uint8_t conn_err) {
     LOG_DBG("Connected: %s", addr);
 
     confirm_peripheral_slot_conn(conn);
-    split_central_process_connection(conn);
+
+    int err = bt_conn_set_security(conn, BT_SECURITY_L2);
+    if (err && err != -EALREADY) {
+        LOG_ERR("Failed to secure split connection (err %d)", err);
+        bt_conn_disconnect(conn, BT_HCI_ERR_AUTH_FAIL);
+        return;
+    }
+
+    if (bt_conn_get_security(conn) >= BT_SECURITY_L2) {
+        split_central_process_connection(conn);
+    }
     k_work_submit(&notify_status_work);
 }
 
@@ -990,19 +1000,21 @@ static void split_central_disconnected(struct bt_conn *conn, uint8_t reason) {
 static void split_central_security_changed(struct bt_conn *conn, bt_security_t level,
                                            enum bt_security_err err) {
     struct peripheral_slot *slot = peripheral_slot_for_conn(conn);
-    if (!slot || !slot->selected_physical_layout_handle) {
+    if (!slot) {
         return;
     }
 
     if (err > 0) {
-        LOG_DBG("Skipping updating the physical layout for peripheral with security error");
+        LOG_ERR("Split connection security failed (err %d)", err);
+        bt_conn_disconnect(conn, BT_HCI_ERR_AUTH_FAIL);
         return;
     }
 
     if (level < BT_SECURITY_L2) {
-        LOG_DBG("Skipping updating the physical layout for peripheral with insufficient security");
         return;
     }
+
+    split_central_process_connection(conn);
 
     k_work_submit(&update_peripherals_selected_layouts_work);
 }
